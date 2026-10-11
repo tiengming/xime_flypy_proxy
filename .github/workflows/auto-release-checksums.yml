@@ -16,27 +16,43 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          fetch-tags: true
+
+      - name: Install dependencies (ensure checksum tools)
+        run: |
+          # 确保 md5sum 和 sha256sum 可用（部分 ubuntu-latest 镜像可能缺少 coreutils）
+          sudo apt-get update && sudo apt-get install -y coreutils
 
       - name: Process Modules & Generate Independent Versions
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git fetch --all
-          branches=$(git branch -r | grep -v 'HEAD' | sed 's/^[[:space:]]*origin\///')
+          # 获取所有远程分支
+          branches=$(git for-each-ref --format='%(refname:short)' refs/remotes/origin/ | grep -v 'HEAD')
           
+          if [ -z "$branches" ]; then
+            echo "No remote branches found. Exiting."
+            exit 1
+          fi
+
           # 获取全局 Release 标签；如果是手动触发则赋一个默认占位符
           GLOBAL_TAG="${{ github.event.release.tag_name }}"
           if [ -z "$GLOBAL_TAG" ]; then
-            GLOBAL_TAG="manual-build"
+            GLOBAL_TAG="manual-build-${{ github.run_number }}"
           fi
-          
+
           SUMMARY_FILE="release_summary.md"
-          echo "### 📦 各功能模块与独立版本校验" > "$SUMMARY_FILE"
-          echo "" >> "$SUMMARY_FILE"
-          echo "触发构建的全局发布版：\`$GLOBAL_TAG\`" >> "$SUMMARY_FILE"
-          echo "" >> "$SUMMARY_FILE"
-          echo "| 模块 / 分支说明 | 独立版本号 | 文件名 | MD5 校验码 | SHA256 校验码 |" >> "$SUMMARY_FILE"
-          echo "| :--- | :--- | :--- | :--- | :--- |" >> "$SUMMARY_FILE"
+          cat > "$SUMMARY_FILE" << 'EOF'
+          ### 📦 各功能模块与独立版本校验
+
+          触发构建的全局发布版：`PLACEHOLDER_TAG`
+
+          | 模块 / 分支说明 | 独立版本号 | 文件名 | MD5 校验码 | SHA256 校验码 |
+          | :--- | :--- | :--- | :--- | :--- |
+          EOF
+
+          # 替换占位符
+          sed -i "s/PLACEHOLDER_TAG/$GLOBAL_TAG/" "$SUMMARY_FILE"
 
           for branch in $branches; do
             safe_branch=$(echo "$branch" | tr '/' '_')
@@ -47,11 +63,11 @@ jobs:
             # 如果该分支没有 VERSION 文件，则回退使用全局 Release 标签
             if [ -z "$branch_version" ]; then
               branch_version="$GLOBAL_TAG"
-            fi  # 【已修复：原先错误使用了 }】
+            fi
             
             # 2. 映射模块描述与文件前缀
             case "$branch" in
-              "v1.0.0" | "main" | "master")
+              "main"|"master")
                 module_desc="小鹤双拼多功能配置"
                 file_prefix="xime_flypy_proxy-core"
                 ;;
@@ -69,14 +85,14 @@ jobs:
             filename="${file_prefix}-${branch_version}.zip"
             
             echo "----------------------------------------"
-            echo "正在打包 [$module_desc] \vert{} 对应分支: $branch | 独立版本: $branch_version ->$filename"
+            echo "正在打包 [$module_desc] | 对应分支: $branch | 独立版本: $branch_version -> $filename"
             
             # 打包对应远程分支的纯净源码
             git archive --format=zip "origin/$branch" -o "$filename"
             
-            # 计算哈希
-            md5_val=$(md5sum "$filename" | awk '{print $1}')
-            sha256_val=$(sha256sum "$filename" | awk '{print $1}')
+            # 计算哈希 (使用 openssl 确保跨环境兼容性)
+            md5_val=$(openssl md5 "$filename" | awk '{print $2}')
+            sha256_val=$(openssl sha256 "$filename" | awk '{print $2}')
             
             echo "$md5_val" > "${filename}.md5"
             echo "$sha256_val" > "${filename}.sha256"
@@ -91,16 +107,19 @@ jobs:
           if [ "${{ github.event_name }}" = "release" ]; then
             echo "正在上传资产到 Release: $GLOBAL_TAG"
             
+            # 使用通配符上传，--clobber 允许覆盖
             gh release upload "$GLOBAL_TAG" xime_flypy_proxy-*.zip xime_flypy_proxy-*.md5 xime_flypy_proxy-*.sha256 --clobber
             
-            # 【已修复：补上了 --json 前缀】
+            # 获取当前 Release 描述
             current_body=$(gh release view "$GLOBAL_TAG" --json body -q .body 2>/dev/null || echo "")
-            new_body="$current_body
-
-$(cat "$SUMMARY_FILE")"
             
+            # 使用 printf 避免换行符解析错误
+            new_body=$(printf "%s\n\n$(cat "$SUMMARY_FILE")" "$current_body")
+            
+            # 更新 Release 描述
             gh release edit "$GLOBAL_TAG" --body "$new_body"
             echo "Release 页面更新成功！"
           else
+            echo "手动触发构建，跳过 Release 上传。"
             cat "$SUMMARY_FILE"
           fi
