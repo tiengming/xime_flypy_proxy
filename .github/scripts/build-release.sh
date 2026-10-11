@@ -84,8 +84,13 @@ for branch in $branches; do
     gh release create "$branch_tag" \
       --title "$module_desc $branch_version" \
       --notes "自动发布：$module_desc（分支 $branch）" \
-      -latest=false \
-      "$out_filename"
+      -- \
+      --latest=false \
+      "$out_filename" \
+      || gh release create "$branch_tag" \
+        --title "$module_desc $branch_version" \
+        --notes "自动发布：$module_desc（分支 $branch）" \
+        "$out_filename"
   fi
 
   rm -f "$out_filename"
