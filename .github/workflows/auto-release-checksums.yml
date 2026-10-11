@@ -1,87 +1,106 @@
-name: Auto Archive & Checksums for All Branches
+name: Auto Archive & Checksums for Independent Versions
 
 on:
   release:
-    types: [published] # 当你在 GitHub 后台发布新 Release 时自动触发
-  workflow_dispatch:   # 支持在 Actions 页面手动点击触发
+    types: [published]
+  workflow_dispatch:
 
 jobs:
   build-all-branches:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # 必须赋予写入权限，以便上传资产和修改 Release 说明
+      contents: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # 获取完整提交历史和所有分支
+          fetch-depth: 0
 
-      - name: Process All Branches & Generate Checksums
+      - name: Process Modules & Generate Independent Versions
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 1. 动态获取所有远程分支（排除 HEAD 和无用引用）
           git fetch --all
           branches=$(git branch -r | grep -v 'HEAD' | sed 's/^[[:space:]]*origin\///')
           
-          echo "检测到以下分支:"
-          echo "$branches"
-
-          # 2. 初始化 Markdown 说明文件
+          # 获取全局 Release 标签；如果是手动触发则赋一个默认占位符
+          GLOBAL_TAG="${{ github.event.release.tag_name }}"
+          if [ -z "$GLOBAL_TAG" ]; then
+            GLOBAL_TAG="manual-build"
+          fi
+          
           SUMMARY_FILE="release_summary.md"
-          echo "### 📦 各分支源码包与校验码" > "$SUMMARY_FILE"
+          echo "### 📦 各功能模块与独立版本校验" > "$SUMMARY_FILE"
           echo "" >> "$SUMMARY_FILE"
-          echo "以下为系统自动生成的全分支打包文件及指纹信息（点击代码块即可快速复制）：" >> "$SUMMARY_FILE"
+          echo "触发构建的全局发布版：\`$GLOBAL_TAG\`" >> "$SUMMARY_FILE"
           echo "" >> "$SUMMARY_FILE"
-          echo "| 分支名称 | 文件名 | MD5 校验码 | SHA256 校验码 |" >> "$SUMMARY_FILE"
-          echo "| :--- | :--- | :--- | :--- |" >> "$SUMMARY_FILE"
+          echo "| 模块 / 分支说明 | 独立版本号 | 文件名 | MD5 校验码 | SHA256 校验码 |" >> "$SUMMARY_FILE"
+          echo "| :--- | :--- | :--- | :--- | :--- |" >> "$SUMMARY_FILE"
 
-          # 3. 循环遍历每一个分支进行打包和哈希计算
           for branch in $branches; do
-            # 将分支名中的斜杠转换为下划线（例如 feature/v1.0 -> feature_v1.0）
             safe_branch=$(echo "$branch" | tr '/' '_')
-            filename="repo-${safe_branch}.zip"
+            
+            # 1. 尝试从该分支根目录读取 VERSION 文件
+            branch_version=$(git show "origin/$branch:VERSION" 2>/dev/null | tr -d '[:space:]' || true)
+            
+            # 如果该分支没有 VERSION 文件，则回退使用全局 Release 标签
+            if [ -z "$branch_version" ]; then
+              branch_version="$GLOBAL_TAG"
+            fi  # 【已修复：原先错误使用了 }】
+            
+            # 2. 映射模块描述与文件前缀
+            case "$branch" in
+              "v1.0.0" | "main" | "master")
+                module_desc="核心代理模块 (Core)"
+                file_prefix="xime_flypy_proxy-core"
+                ;;
+              "ximenet")
+                module_desc="文件管理模块 (Ximenet)"
+                file_prefix="xime_flypy_proxy-ximenet"
+                ;;
+              *)
+                module_desc="扩展模块 ($branch)"
+                file_prefix="xime_flypy_proxy-${safe_branch}"
+                ;;
+            esac
+            
+            # 组合成带有各自独立版本号的文件名
+            filename="${file_prefix}-${branch_version}.zip"
             
             echo "----------------------------------------"
-            echo "正在处理分支: $branch -> $filename"
+            echo "正在打包 [$module_desc] \vert{} 对应分支: $branch | 独立版本: $branch_version ->$filename"
             
-            # 使用 git archive 直接打包指定远程分支（不含 .git，干净纯粹）
+            # 打包对应远程分支的纯净源码
             git archive --format=zip "origin/$branch" -o "$filename"
             
-            # 计算 MD5 和 SHA256
+            # 计算哈希
             md5_val=$(md5sum "$filename" | awk '{print $1}')
             sha256_val=$(sha256sum "$filename" | awk '{print $1}')
             
-            # 同时生成独立的校验文本文件备用
             echo "$md5_val" > "${filename}.md5"
             echo "$sha256_val" > "${filename}.sha256"
             
-            # 写入 Markdown 表格（使用反引号包裹，支持一键/双击复制）
-            echo "| \`$branch\` | \`$filename\` | \`$md5_val\` | \`$sha256_val\` |" >> "$SUMMARY_FILE"
+            # 写入 Markdown 表格
+            echo "| **$module_desc**<br>(\`$branch\`) | \`$branch_version\` | \`$filename\` | \`$md5_val\` | \`$sha256_val\` |" >> "$SUMMARY_FILE"
           done
 
           echo "----------------------------------------"
-          echo "所有分支处理完毕！"
 
-          # 4. 如果是通过 Release 触发的，自动上传附件并更新 Release 页面说明
+          # 如果是 Release 触发，自动上传所有模块的不同版本资产并更新说明
           if [ "${{ github.event_name }}" = "release" ]; then
-            TAG_NAME="${{ github.event.release.tag_name }}"
-            echo "正在将产物上传到 Release: $TAG_NAME"
+            echo "正在上传资产到 Release: $GLOBAL_TAG"
             
-            # 上传所有 zip、md5、sha256 文件到当前 Release
-            gh release upload "$TAG_NAME" repo-*.zip repo-*.md5 repo-*.sha256 --clobber
+            gh release upload "$GLOBAL_TAG" xime_flypy_proxy-*.zip xime_flypy_proxy-*.md5 xime_flypy_proxy-*.sha256 --clobber
             
-            # 获取当前 Release 原有的描述说明，并在下方追加自动生成的表格
-            current_body=$(gh release view "$TAG_NAME" --json body -q .body)
+            # 【已修复：补上了 --json 前缀】
+            current_body=$(gh release view "$GLOBAL_TAG" --json body -q .body 2>/dev/null || echo "")
             new_body="$current_body
 
 $(cat "$SUMMARY_FILE")"
             
-            # 更新 Release 页面
-            gh release edit "$TAG_NAME" --body "$new_body"
+            gh release edit "$GLOBAL_TAG" --body "$new_body"
             echo "Release 页面更新成功！"
           else
-            echo "手动触发测试完成。生成的摘要内容："
             cat "$SUMMARY_FILE"
           fi
