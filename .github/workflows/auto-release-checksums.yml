@@ -117,7 +117,7 @@ jobs:
             new_body=$(printf "%s\n\n$(cat "$SUMMARY_FILE")" "$current_body")
 
             # 更新 Release 描述
-            gh release edit "$GLOBAL_TAG" --body "$new_body"
+            gh release edit "$GLOBAL_TAG" --notes "$new_body"
             echo "Release 页面更新成功！"
           else
             echo "手动触发构建，跳过 Release 上传。"
