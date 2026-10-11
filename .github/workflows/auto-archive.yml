@@ -1,0 +1,29 @@
+name: Auto Archive & Checksums for Independent Versions
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-all-branches:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # 无论 tag 指向哪个 commit，都强制用 main 分支的最新代码
+      - name: Checkout main branch (always latest)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Fetch all branches and tags
+        run: git fetch --all --tags --prune
+
+      - name: Run build script from main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: bash .github/scripts/build-release.sh
