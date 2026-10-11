@@ -52,11 +52,11 @@ jobs:
             # 2. 映射模块描述与文件前缀
             case "$branch" in
               "v1.0.0" | "main" | "master")
-                module_desc="核心代理模块 (Core)"
+                module_desc="小鹤双拼多功能配置"
                 file_prefix="xime_flypy_proxy-core"
                 ;;
               "ximenet")
-                module_desc="文件管理模块 (Ximenet)"
+                module_desc="扩展商店资源加速"
                 file_prefix="xime_flypy_proxy-ximenet"
                 ;;
               *)
