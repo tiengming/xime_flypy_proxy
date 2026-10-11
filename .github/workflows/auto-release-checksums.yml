@@ -73,11 +73,11 @@ jobs:
                 ;;
               "ximenet")
                 module_desc="扩展商店资源加速"
-                file_prefix="xime_flypy_proxy-ximenet"
+                file_prefix="ximenet"
                 ;;
               *)
                 module_desc="扩展模块 ($branch)"
-                file_prefix="xime_flypy_proxy-${safe_branch}"
+                file_prefix="xime-${safe_branch}"
                 ;;
             esac
 
