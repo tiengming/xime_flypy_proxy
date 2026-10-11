@@ -27,9 +27,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 获取所有远程分支
-          branches=$(git for-each-ref --format='%(refname:short)' refs/remotes/origin/ | grep -v 'HEAD')
-          
+          # 获取所有远程分支（去掉 origin/ 前缀，并排除 HEAD）
+          branches=$(git for-each-ref --format='%(refname:lstrip=3)' refs/remotes/origin/ | grep -v '^HEAD$' || true)
+
           if [ -z "$branches" ]; then
             echo "No remote branches found. Exiting."
             exit 1
@@ -56,15 +56,15 @@ jobs:
 
           for branch in $branches; do
             safe_branch=$(echo "$branch" | tr '/' '_')
-            
+
             # 1. 尝试从该分支根目录读取 VERSION 文件
             branch_version=$(git show "origin/$branch:VERSION" 2>/dev/null | tr -d '[:space:]' || true)
-            
+
             # 如果该分支没有 VERSION 文件，则回退使用全局 Release 标签
             if [ -z "$branch_version" ]; then
               branch_version="$GLOBAL_TAG"
             fi
-            
+
             # 2. 映射模块描述与文件前缀
             case "$branch" in
               "main"|"master")
@@ -80,23 +80,23 @@ jobs:
                 file_prefix="xime_flypy_proxy-${safe_branch}"
                 ;;
             esac
-            
+
             # 组合成带有各自独立版本号的文件名
             filename="${file_prefix}-${branch_version}.zip"
-            
+
             echo "----------------------------------------"
             echo "正在打包 [$module_desc] | 对应分支: $branch | 独立版本: $branch_version -> $filename"
-            
+
             # 打包对应远程分支的纯净源码
             git archive --format=zip "origin/$branch" -o "$filename"
-            
+
             # 计算哈希 (使用 openssl 确保跨环境兼容性)
             md5_val=$(openssl md5 "$filename" | awk '{print $2}')
             sha256_val=$(openssl sha256 "$filename" | awk '{print $2}')
-            
+
             echo "$md5_val" > "${filename}.md5"
             echo "$sha256_val" > "${filename}.sha256"
-            
+
             # 写入 Markdown 表格
             echo "| **$module_desc**<br>(\`$branch\`) | \`$branch_version\` | \`$filename\` | \`$md5_val\` | \`$sha256_val\` |" >> "$SUMMARY_FILE"
           done
@@ -106,16 +106,16 @@ jobs:
           # 如果是 Release 触发，自动上传所有模块的不同版本资产并更新说明
           if [ "${{ github.event_name }}" = "release" ]; then
             echo "正在上传资产到 Release: $GLOBAL_TAG"
-            
+
             # 使用通配符上传，--clobber 允许覆盖
             gh release upload "$GLOBAL_TAG" xime_flypy_proxy-*.zip xime_flypy_proxy-*.md5 xime_flypy_proxy-*.sha256 --clobber
-            
+
             # 获取当前 Release 描述
             current_body=$(gh release view "$GLOBAL_TAG" --json body -q .body 2>/dev/null || echo "")
-            
+
             # 使用 printf 避免换行符解析错误
             new_body=$(printf "%s\n\n$(cat "$SUMMARY_FILE")" "$current_body")
-            
+
             # 更新 Release 描述
             gh release edit "$GLOBAL_TAG" --body "$new_body"
             echo "Release 页面更新成功！"
