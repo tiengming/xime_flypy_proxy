@@ -43,6 +43,10 @@ for branch in $branches; do
       module_desc="扩展商店资源加速"
       tag_prefix="xime_index_net"
       ;;
+    "xime_theme")
+      module_desc="xime 多主题"
+      tag_prefix="xime_theme"
+      ;;
     *)
       module_desc="扩展模块 ($branch)"
       tag_prefix="xime_flypy_proxy-${safe_branch}"
