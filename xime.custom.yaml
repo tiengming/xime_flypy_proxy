@@ -2,12 +2,14 @@ style:
   color_scheme: starry_night_voyage
 
 # ══════════════════════════════════════════════════════════
-#  五套主题配色
+#  五套主题配色（v1.1.0）
 #  1. 星野夜航（当前使用，保持原样）
 #  2. Notion 极简
 #  3. Claude 暖砂
 #  4. Apple 原生
 #  5. Material You 动态
+#  v1.1.0：全部配色补齐候选选中色（candidate_selected_text_color），
+#          Material You 动态按 M3 2024 基准 token 校准表面色阶
 # ══════════════════════════════════════════════════════════
 color_schemes:
   # ── 1. 星野夜航 ──
@@ -25,6 +27,8 @@ color_schemes:
     key_text_color_dark: 0xE3DEF7
     candidate_text_color: 0x38305E
     candidate_text_color_dark: 0xE3DEF7
+    candidate_selected_text_color: 0x6D5BD0
+    candidate_selected_text_color_dark: 0xC9BEFF
 
   # ── 2. Notion 极简 ──
   # 设计参考：Notion 的暖白背景 + 深墨文字 + Notion 蓝强调色
@@ -42,6 +46,8 @@ color_schemes:
     key_text_color_dark: 0xE9E9E7
     candidate_text_color: 0x37352F
     candidate_text_color_dark: 0xE9E9E7
+    candidate_selected_text_color: 0x1E74CC
+    candidate_selected_text_color_dark: 0x7CB9F0
 
   # ── 3. Claude 暖砂 ──
   # 设计参考：Claude 官网的奶油底色 + 赤陶色强调 + 暖灰文字
@@ -59,6 +65,8 @@ color_schemes:
     key_text_color_dark: 0xF5F4EF
     candidate_text_color: 0x3D3D3A
     candidate_text_color_dark: 0xF5F4EF
+    candidate_selected_text_color: 0xC2603F
+    candidate_selected_text_color_dark: 0xE3987B
 
   # ── 4. Apple 原生 ──
   # 设计参考：iOS 系统键盘的浅灰底 + 纯白按键 + 系统蓝强调
@@ -76,16 +84,20 @@ color_schemes:
     key_text_color_dark: 0xFFFFFF
     candidate_text_color: 0x000000
     candidate_text_color_dark: 0xFFFFFF
+    candidate_selected_text_color: 0x007AFF
+    candidate_selected_text_color_dark: 0x0A84FF
 
   # ── 5. Material You 动态 ──
   # 设计参考：Material Design 3 基准调色板（紫罗兰），自动适配系统亮/暗模式
+  # v1.1.0 按 M3 2024 基准 token 校准：亮色 surface→surfaceContainer（#FEF7FF→#F3EDF7），
+  # 暗色 surface→surfaceContainer（#141218→#211F26），选中色取 M3 亮色 primary / 暗色 primary
   material_you:
     name: "Material 动态"
     primary_color: 0x6750A4
     keyboard_background:
       type: gradient
-      colors: [0xF3EDF7, 0xE8DEF8]
-      colors_dark: [0x1C1B1F, 0x211F26]
+      colors: [0xFEF7FF, 0xF3EDF7]
+      colors_dark: [0x141218, 0x211F26]
       angle: 135
     key_bg_color: 0xFFFFFF
     key_bg_color_dark: 0x2B2930
@@ -93,6 +105,8 @@ color_schemes:
     key_text_color_dark: 0xE6E1E5
     candidate_text_color: 0x1D1B20
     candidate_text_color_dark: 0xE6E1E5
+    candidate_selected_text_color: 0x6750A4
+    candidate_selected_text_color_dark: 0xD0BCFF
 
 keyboard:
   colors:
