@@ -1,10 +1,12 @@
 # ══════════════════════════════════════════════════════════
-#  xime 主题包（xime_theme_pack）v1.0.0
-#  11 套配色合并同一份配置（应用内随意切换，互不顶替）：
+#  xime 主题包（xime_theme_pack）v1.1.0
+#  15 套配色合并同一份配置（应用内随意切换，互不顶替）：
 #   · Material You 家族 ×4（M3 色调结构：紫罗兰/暖玫瑰/海蓝/松绿）
 #   · 渐变家族 ×5（3 断点渐变 + 玻璃拟态半透明按键）
-#   · 图片背景家族 ×2（themes/ 下原创生成背景图）
-#  自带字体：霞鹜文楷 Regular/Medium（SIL OFL 1.1，全文见 NOTICE.md）
+#   · 图片背景家族 ×6（银河/晨雾/远山/樱吹雪/星月/海平线，themes/ 原创）
+#  自带字体：Maple Mono NL CN（键面，SIL OFL 1.1）+ 霞鹜文楷（候选/注释，SIL OFL 1.1）
+#  v1.1.0：关闭按键阴影（半透明键面下投影轮廓残缺）；图片家族扩到 6 场景；
+#          键面字体换用 Maple Mono 圆角等宽（含 CJK、无连字变体）
 #  全部配色文字对比度已按 WCAG 校验（键面 ≥4.5:1，选中色 ≥3:1）
 # ══════════════════════════════════════════════════════════
 
@@ -207,6 +209,81 @@ color_schemes:
     candidate_selected_text_color: 0x3E6FA8
     candidate_selected_text_color_dark: 0xBBD6F2
 
+  image_mountains:
+    name: "远山拾光"
+    primary_color: 0x3E7A5E
+    keyboard_background:
+      type: image
+      src: "themes/mountains_day.jpg"
+      src_dark: "themes/mountains_night.jpg"
+      fit: cover
+      overlay_alpha: 0.10
+      overlay_alpha_dark: 0.25
+    key_bg_color: 0x99FFFFFF
+    key_bg_color_dark: 0x38FFFFFF
+    key_text_color: 0x1F3340
+    key_text_color_dark: 0xF0F4F2
+    candidate_text_color: 0x1F3340
+    candidate_text_color_dark: 0xF0F4F2
+    candidate_selected_text_color: 0x2F6B4F
+    candidate_selected_text_color_dark: 0x9FD5B5
+
+  image_sakura:
+    name: "樱吹雪"
+    primary_color: 0xE0568C
+    keyboard_background:
+      type: image
+      src: "themes/sakura_day.jpg"
+      src_dark: "themes/sakura_night.jpg"
+      fit: cover
+      overlay_alpha: 0.10
+      overlay_alpha_dark: 0.26
+    key_bg_color: 0x99FFFFFF
+    key_bg_color_dark: 0x33FFFFFF
+    key_text_color: 0x4A2338
+    key_text_color_dark: 0xF7E9F0
+    candidate_text_color: 0x4A2338
+    candidate_text_color_dark: 0xF7E9F0
+    candidate_selected_text_color: 0xC74A7C
+    candidate_selected_text_color_dark: 0xFF9EC4
+
+  image_moonlit:
+    name: "星月童话"
+    primary_color: 0xD9A441
+    keyboard_background:
+      type: image
+      src: "themes/moonlit.jpg"
+      fit: cover
+      overlay_alpha: 0.12
+      overlay_alpha_dark: 0.25
+    key_bg_color: 0x8CFFFFFF
+    key_bg_color_dark: 0x40FFFFFF
+    key_text_color: 0x232323
+    key_text_color_dark: 0xF2F2F2
+    candidate_text_color: 0xF5F1E8
+    candidate_text_color_dark: 0xF5F1E8
+    candidate_selected_text_color: 0xFFD98E
+    candidate_selected_text_color_dark: 0xFFD98E
+
+  image_sea:
+    name: "落日海平线"
+    primary_color: 0xE07840
+    keyboard_background:
+      type: image
+      src: "themes/sea_sunset.jpg"
+      src_dark: "themes/sea_night.jpg"
+      fit: cover
+      overlay_alpha: 0.10
+      overlay_alpha_dark: 0.24
+    key_bg_color: 0x99FFFFFF
+    key_bg_color_dark: 0x33FFFFFF
+    key_text_color: 0x3A2A24
+    key_text_color_dark: 0xF2F2F2
+    candidate_text_color: 0x3A2A24
+    candidate_text_color_dark: 0xF2F2F2
+    candidate_selected_text_color: 0x9C4A1E
+    candidate_selected_text_color_dark: 0xFFB37C
+
 keyboard:
   # 全局兜底颜色（color_schemes 未覆盖的字段回退到这里，取 M3 紫罗兰表面色阶）
   colors:
@@ -224,13 +301,16 @@ keyboard:
   key:
     corner_radius: 14
 
+  # v1.1.0 关闭按键阴影：半透明玻璃键面下，应用按默认圆角绘制的投影
+  # 与 14dp 键面圆角不匹配，四角/边缘投影残缺、视觉怪异；玻璃质感不依赖投影。
+  # 若想恢复：enabled: true（建议配合 8dp 圆角使用）。
   shadow:
-    enabled: true
-    elevation: 1
+    enabled: false
 
   fonts:
-    # 键面主字用 Medium（略重、辨识度高），候选与注释用 Regular；
+    # 键面主字：Maple Mono NL CN Regular（圆角等宽、含 CJK、无连字变体，
+    # "，/中/英"等中文键面标签不缺字）；候选与注释保持霞鹜文楷楷体气质；
     # key_label_font 保留内置 ChaiPUA（字根 / CJK 扩展区字符兼容）
-    key_font: "fonts/lxgw_wenkai_medium.ttf"
+    key_font: "fonts/maple_mono_nl_cn_regular.ttf"
     candidate_font: "fonts/lxgw_wenkai_regular.ttf"
     comment_font: "fonts/lxgw_wenkai_regular.ttf"

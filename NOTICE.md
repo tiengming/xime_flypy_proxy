@@ -4,16 +4,21 @@
 
 | 文件 | 字体 | 许可 |
 |------|------|------|
+| `fonts/maple_mono_nl_cn_regular.ttf` | Maple Mono NL CN Regular（v7.9） | SIL Open Font License 1.1 |
 | `fonts/lxgw_wenkai_regular.ttf` | 霞鹜文楷 LXGW WenKai Regular | SIL Open Font License 1.1 |
-| `fonts/lxgw_wenkai_medium.ttf` | 霞鹜文楷 LXGW WenKai Medium | SIL Open Font License 1.1 |
 
-- 字体作者：LXGW（https://github.com/lxgw/LxgwWenKai），基于 Fontworks 的 Klee One 衍生。
-- 本包按 OFL 1.1 随附完整许可证文本（见下文），再分发时请保留本文件。
+- **Maple Mono**：Copyright 2022 The Maple Mono Project Authors
+  （https://github.com/subframe7536/maple-font）。此处选用 **NL-CN（无连字、含简体中文）**
+  Regular 字重作为键盘键面字体。
+- **霞鹜文楷**：Copyright 2021-2026 LXGW（https://github.com/lxgw/LxgwWenKai），
+  基于 Fontworks 的 Klee One 衍生。用作候选词 / 注释字体。
+- 两款字体同以 SIL OFL 1.1 授权，随附完整许可证文本（见下文），再分发时请保留本文件。
 
 ## 背景图
 
-`themes/starry_night.jpg`、`themes/dawn_mist.jpg`、`themes/dusk_glow.jpg`
-为本布局配套**原创程序化生成**的图像（脚本绘制，非第三方素材，无版权负担），可随本包自由分发。
+`themes/` 目录 11 张背景图（银河漫游 / 晨雾云海 / 暮色流光 / 远山拾光昼与夜 /
+樱吹雪昼与夜 / 星月童话 / 落日海平线夕与夜）均为**原创程序化生成**的图像
+（脚本绘制，非第三方素材，无版权负担），可随本包自由分发。
 
 ## 布局配置
 
@@ -21,9 +26,12 @@
 
 ---
 
-## SIL Open Font License 1.1（全文）
+## SIL Open Font License 1.1（全文，适用于上述两款字体）
+
+Copyright 2022 The Maple Mono Project Authors (https://github.com/subframe7536/maple-font)
 
 Copyright 2021-2026 LXGW (https://github.com/lxgw/LxgwWenKai), with Reserved Font Name '霞鹜', '霞鶩', '落霞孤鹜', '落霞孤鶩' and 'LXGW'. [ADDITIONAL PERMISSION] The Reserved Font Names '霞鹜', '霞鶩', '落霞孤鹜', '落霞孤鶩' and 'LXGW' may continue to be used in Modified Versions recompiled from the Original Version, without modifications to the font source code; or in Modified Versions subsetted or converted to other formats (e.g., WOFF/WOFF2) solely for web font delivery, provided such Modified Versions are not made available as installable desktop fonts (e.g., on mainstream platforms like Google Fonts, or third-party non-commercial platforms recognized by the author @lxgw; other web font platforms please contact the author @lxgw for confirmation).
+
 Copyright 2020 The Klee Project Authors (https://github.com/fontworks-fonts/Klee)
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
