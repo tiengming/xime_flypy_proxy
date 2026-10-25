@@ -4,6 +4,29 @@ set -euo pipefail
 GLOBAL_TAG="${RELEASE_TAG:-manual-build-$(date +%s)}"
 GLOBAL_VERSION="${GLOBAL_TAG#v}"
 
+# ── 资源打包辅助（分支含 themes/ 或 fonts/ 时，按索引 LAYOUT_SPEC 打根级 zip） ──
+
+has_resources() {  # $1=branch：分支是否携带 themes/ 或 fonts/ 资源
+  git ls-tree -r --name-only "origin/$1" 2>/dev/null | grep -qE '^(themes|fonts)/'
+}
+
+build_zip() {  # $1=branch $2=zip 输出文件名：根级 xime.custom.yaml + themes/ + fonts/ + 文档
+  local branch="$1" out="$2" f doc out_abs
+  out_abs=$(realpath -m "$out")
+  rm -f "$out_abs"   # zip 对已存在的包是合并更新，先删保证干净重建
+  rm -rf _zip_stage && mkdir -p _zip_stage
+  git show "origin/$branch:xime.custom.yaml" > "_zip_stage/xime.custom.yaml"
+  for f in $(git ls-tree -r --name-only "origin/$branch" | grep -E '^(themes|fonts)/'); do
+    mkdir -p "_zip_stage/$(dirname "$f")"
+    git show "origin/$branch:$f" > "_zip_stage/$f"
+  done
+  for doc in NOTICE.md README.md; do
+    git show "origin/$branch:$doc" > "_zip_stage/$doc" 2>/dev/null || rm -f "_zip_stage/$doc"
+  done
+  (cd _zip_stage && zip -q -r -X "$out_abs" .)
+  rm -rf _zip_stage
+}
+
 branches=$(git for-each-ref --format='%(refname:lstrip=3)' refs/remotes/origin/ | grep -v '^HEAD$' || true)
 
 if [ -z "$branches" ]; then
@@ -42,13 +65,17 @@ for branch in $branches; do
     "main"|"master") module_desc="小鹤双拼多功能配置"; tag_prefix="xime_flypy_proxy" ;;
     "ximenet")       module_desc="扩展商店资源加速"; tag_prefix="xime_index_net" ;;
     "xime_theme")    module_desc="xime 多主题"; tag_prefix="xime_theme" ;;
+    "xime_theme_pack") module_desc="xime 主题包（配色+字体+背景图）"; tag_prefix="xime_theme_pack" ;;
     *)               module_desc="扩展模块 ($branch)"; tag_prefix="xime_flypy_proxy-${safe_branch}" ;;
   esac
 
   branch_tag="${tag_prefix}-${branch_version}"
   out_filename="xime.custom.yaml"
+  zip_filename="${safe_branch}.zip"
+  has_res=false
+  has_resources "$branch" && has_res=true || true
 
-  echo "正在处理 [$module_desc] | 分支: $branch | 版本: $branch_version | tag: $branch_tag"
+  echo "正在处理 [$module_desc] | 分支: $branch | 版本: $branch_version | tag: $branch_tag | 资源zip: $has_res"
 
   branch_commit=$(git rev-parse "origin/$branch")
 
@@ -68,13 +95,29 @@ for branch in $branches; do
         -q '.assets[] | select(.name=="xime.custom.yaml") | "\(.digest)|\(.size)"' 2>/dev/null || echo "")
       if [ -n "$asset_line" ]; then
         sha256_full="${asset_line%%|*}"
-        size_bytes="${asset_line##*|}"
+        size_bytes="${asset_line##|*}"
         sha256_val="${sha256_full#sha256:}"
         size_human=$(numfmt --to=iec --suffix=B "$size_bytes" 2>/dev/null || echo "${size_bytes} B")
       else
         sha256_val="N/A"; size_human="N/A"
       fi
       echo "| **$module_desc**<br>(\`$branch\`) | \`$branch_tag\` | \`xime.custom.yaml\` | \`$sha256_val\` | \`$size_human\` | ⏭️ 跳过（无变化） |" >> "$SUMMARY_FILE"
+      # 资源 zip：附件已存在则记录 digest；缺失则本地重建补传（yaml 未变但 zip 逻辑后补的场景）
+      if [ "$has_res" = true ]; then
+        zip_line=$(gh release view "$branch_tag" --json assets \
+          -q ".assets[] | select(.name==\"$zip_filename\") | \"\\(.digest)|\\(.size)\"" 2>/dev/null || echo "")
+        if [ -n "$zip_line" ]; then
+          zsha_full="${zip_line%%|*}"; zsize_bytes="${zip_line##|*}"
+          echo "| **$module_desc**<br>(\`$branch\`) | \`$branch_tag\` | \`$zip_filename\` | \`${zsha_full#sha256:}\` | \`$(numfmt --to=iec --suffix=B "$zsize_bytes" 2>/dev/null || echo "${zsize_bytes} B")\` | ⏭️ 跳过（无变化） |" >> "$SUMMARY_FILE"
+        else
+          build_zip "$branch" "$zip_filename"
+          zsha_val=$(openssl sha256 "$zip_filename" | awk '{print $2}')
+          zsize_bytes=$(stat -c %s "$zip_filename" 2>/dev/null || stat -f %z "$zip_filename")
+          gh release upload "$branch_tag" "$zip_filename" --clobber
+          echo "| **$module_desc**<br>(\`$branch\`) | \`$branch_tag\` | \`$zip_filename\` | \`$zsha_val\` | \`$(numfmt --to=iec --suffix=B "$zsize_bytes" 2>/dev/null || echo "${zsize_bytes} B")\` | 🔧 补传 zip |" >> "$SUMMARY_FILE"
+          rm -f "$zip_filename"
+        fi
+      fi
     else
       # tag 存在但 Release 被删 → 重建 Release，不重打 tag
       echo "  ⚠️ Release 不存在但 tag 存在，重建 Release。"
@@ -82,17 +125,26 @@ for branch in $branches; do
         sha256_val=$(openssl sha256 "$out_filename" | awk '{print $2}')
         size_bytes=$(stat -c %s "$out_filename" 2>/dev/null || stat -f %z "$out_filename")
         size_human=$(numfmt --to=iec --suffix=B "$size_bytes" 2>/dev/null || echo "${size_bytes} B")
+        release_assets=("$out_filename")
+        if [ "$has_res" = true ] && build_zip "$branch" "$zip_filename"; then
+          release_assets+=("$zip_filename")
+        fi
         gh release create "$branch_tag" \
           --title "$module_desc $branch_version" \
           --notes "自动发布：$module_desc（分支 $branch）" \
           --latest=false \
-          "$out_filename" 2>/dev/null || \
+          "${release_assets[@]}" 2>/dev/null || \
         gh release create "$branch_tag" \
           --title "$module_desc $branch_version" \
           --notes "自动发布：$module_desc（分支 $branch）" \
-          "$out_filename"
-        rm -f "$out_filename"
+          "${release_assets[@]}"
         echo "| **$module_desc**<br>(\`$branch\`) | \`$branch_tag\` | \`xime.custom.yaml\` | \`$sha256_val\` | \`$size_human\` | 🔧 重建 Release |" >> "$SUMMARY_FILE"
+        if [ "$has_res" = true ] && [ -f "$zip_filename" ]; then
+          zsha_val=$(openssl sha256 "$zip_filename" | awk '{print $2}')
+          zsize_bytes=$(stat -c %s "$zip_filename" 2>/dev/null || stat -f %z "$zip_filename")
+          echo "| **$module_desc**<br>(\`$branch\`) | \`$branch_tag\` | \`$zip_filename\` | \`$zsha_val\` | \`$(numfmt --to=iec --suffix=B "$zsize_bytes" 2>/dev/null || echo "${zsize_bytes} B")\` | 🔧 重建 Release |" >> "$SUMMARY_FILE"
+        fi
+        rm -f "${release_assets[@]}"
       else
         echo "| **$module_desc**<br>(\`$branch\`) | \`$branch_tag\` | - | - | - | ❌ 缺 xime.custom.yaml |" >> "$SUMMARY_FILE"
       fi
@@ -121,29 +173,40 @@ for branch in $branches; do
   size_bytes=$(stat -c %s "$out_filename" 2>/dev/null || stat -f %z "$out_filename")
   size_human=$(numfmt --to=iec --suffix=B "$size_bytes" 2>/dev/null || echo "${size_bytes} B")
 
+  release_assets=("$out_filename")
+  if [ "$has_res" = true ] && build_zip "$branch" "$zip_filename"; then
+    echo "  已打包资源 zip: $zip_filename"
+    release_assets+=("$zip_filename")
+  fi
+
   echo "  为 $branch ($branch_commit) 创建 tag: $branch_tag"
   git tag -a "$branch_tag" "$branch_commit" -m "Release $branch_tag for $module_desc"
   git push origin "refs/tags/$branch_tag"
 
   if gh release view "$branch_tag" >/dev/null 2>&1; then
     echo "  Release 已存在，覆盖资产。"
-    gh release upload "$branch_tag" "$out_filename" --clobber
+    gh release upload "$branch_tag" "${release_assets[@]}" --clobber
   else
     echo "  创建 Release: $branch_tag"
     gh release create "$branch_tag" \
       --title "$module_desc $branch_version" \
       --notes "自动发布：$module_desc（分支 $branch）" \
       --latest=false \
-      "$out_filename" 2>/dev/null || \
+      "${release_assets[@]}" 2>/dev/null || \
     gh release create "$branch_tag" \
       --title "$module_desc $branch_version" \
       --notes "自动发布：$module_desc（分支 $branch）" \
-      "$out_filename"
+      "${release_assets[@]}"
   fi
 
-  rm -f "$out_filename"
-
   echo "| **$module_desc**<br>(\`$branch\`) | \`$branch_tag\` | \`xime.custom.yaml\` | \`$sha256_val\` | \`$size_human\` | ✅ 新发布 |" >> "$SUMMARY_FILE"
+  if [ "$has_res" = true ] && [ -f "$zip_filename" ]; then
+    zsha_val=$(openssl sha256 "$zip_filename" | awk '{print $2}')
+    zsize_bytes=$(stat -c %s "$zip_filename" 2>/dev/null || stat -f %z "$zip_filename")
+    echo "| **$module_desc**<br>(\`$branch\`) | \`$branch_tag\` | \`$zip_filename\` | \`$zsha_val\` | \`$(numfmt --to=iec --suffix=B "$zsize_bytes" 2>/dev/null || echo "${zsize_bytes} B")\` | ✅ 新发布 |" >> "$SUMMARY_FILE"
+  fi
+  rm -f "${release_assets[@]}"
+
 done
 
 echo "----------------------------------------"
