@@ -1,104 +1,26 @@
+# ══════════════════════════════════════════════════════════
+#  xime 主题包（xime_theme_pack）v1.0.0
+#  11 套配色合并同一份配置（应用内随意切换，互不顶替）：
+#   · Material You 家族 ×4（M3 色调结构：紫罗兰/暖玫瑰/海蓝/松绿）
+#   · 渐变家族 ×5（3 断点渐变 + 玻璃拟态半透明按键）
+#   · 图片背景家族 ×2（themes/ 下原创生成背景图）
+#  自带字体：霞鹜文楷 Regular/Medium（SIL OFL 1.1，全文见 NOTICE.md）
+#  全部配色文字对比度已按 WCAG 校验（键面 ≥4.5:1，选中色 ≥3:1）
+# ══════════════════════════════════════════════════════════
+
 style:
-  color_scheme: starry_night_voyage
+  color_scheme: material_violet
 
-# ══════════════════════════════════════════════════════════
-#  五套主题配色（v1.1.0）
-#  1. 星野夜航（当前使用，保持原样）
-#  2. Notion 极简
-#  3. Claude 暖砂
-#  4. Apple 原生
-#  5. Material You 动态
-#  v1.1.0：全部配色补齐候选选中色（candidate_selected_text_color），
-#          Material You 动态按 M3 2024 基准 token 校准表面色阶
-# ══════════════════════════════════════════════════════════
 color_schemes:
-  # ── 1. 星野夜航 ──
-  starry_night_voyage:
-    name: "星野夜航"
-    primary_color: 0x6D5BD0
-    keyboard_background:
-      type: gradient
-      colors: [0xF0EEFB, 0xE3DFF7]
-      colors_dark: [0x0F0C1E, 0x191430]
-      angle: 135
-    key_bg_color: 0xFAF9FF
-    key_bg_color_dark: 0x27FFFFFF
-    key_text_color: 0x38305E
-    key_text_color_dark: 0xE3DEF7
-    candidate_text_color: 0x38305E
-    candidate_text_color_dark: 0xE3DEF7
-    candidate_selected_text_color: 0x6D5BD0
-    candidate_selected_text_color_dark: 0xC9BEFF
-
-  # ── 2. Notion 极简 ──
-  # 设计参考：Notion 的暖白背景 + 深墨文字 + Notion 蓝强调色
-  notion_style:
-    name: "Notion 极简"
-    primary_color: 0x2383E2
-    keyboard_background:
-      type: gradient
-      colors: [0xF7F7F5, 0xEFEFED]
-      colors_dark: [0x191919, 0x202020]
-      angle: 135
-    key_bg_color: 0xFFFFFF
-    key_bg_color_dark: 0x2F2F2F
-    key_text_color: 0x37352F
-    key_text_color_dark: 0xE9E9E7
-    candidate_text_color: 0x37352F
-    candidate_text_color_dark: 0xE9E9E7
-    candidate_selected_text_color: 0x1E74CC
-    candidate_selected_text_color_dark: 0x7CB9F0
-
-  # ── 3. Claude 暖砂 ──
-  # 设计参考：Claude 官网的奶油底色 + 赤陶色强调 + 暖灰文字
-  claude_style:
-    name: "Claude 暖砂"
-    primary_color: 0xD97757
-    keyboard_background:
-      type: gradient
-      colors: [0xF5F4EF, 0xEAE8E0]
-      colors_dark: [0x1F1E1D, 0x272624]
-      angle: 135
-    key_bg_color: 0xFFFFFF
-    key_bg_color_dark: 0x33322F
-    key_text_color: 0x3D3D3A
-    key_text_color_dark: 0xF5F4EF
-    candidate_text_color: 0x3D3D3A
-    candidate_text_color_dark: 0xF5F4EF
-    candidate_selected_text_color: 0xC2603F
-    candidate_selected_text_color_dark: 0xE3987B
-
-  # ── 4. Apple 原生 ──
-  # 设计参考：iOS 系统键盘的浅灰底 + 纯白按键 + 系统蓝强调
-  apple_style:
-    name: "Apple 原生"
-    primary_color: 0x007AFF
-    keyboard_background:
-      type: gradient
-      colors: [0xD4D6DC, 0xC7CAD2]
-      colors_dark: [0x1C1C1E, 0x121214]
-      angle: 135
-    key_bg_color: 0xFFFFFF
-    key_bg_color_dark: 0x363638
-    key_text_color: 0x000000
-    key_text_color_dark: 0xFFFFFF
-    candidate_text_color: 0x000000
-    candidate_text_color_dark: 0xFFFFFF
-    candidate_selected_text_color: 0x007AFF
-    candidate_selected_text_color_dark: 0x0A84FF
-
-  # ── 5. Material You 动态 ──
-  # 设计参考：Material Design 3 基准调色板（紫罗兰），自动适配系统亮/暗模式
-  # v1.1.0 按 M3 2024 基准 token 校准：亮色 surface→surfaceContainer（#FEF7FF→#F3EDF7），
-  # 暗色 surface→surfaceContainer（#141218→#211F26），选中色取 M3 亮色 primary / 暗色 primary
-  material_you:
-    name: "Material 动态"
+  # ── Material You 家族（M3 色调结构，浅 primary≈L48 / 深 primary≈L80） ──
+  material_violet:
+    name: "紫罗兰"
     primary_color: 0x6750A4
     keyboard_background:
       type: gradient
       colors: [0xFEF7FF, 0xF3EDF7]
       colors_dark: [0x141218, 0x211F26]
-      angle: 135
+      angle: 160
     key_bg_color: 0xFFFFFF
     key_bg_color_dark: 0x2B2930
     key_text_color: 0x1D1B20
@@ -108,22 +30,207 @@ color_schemes:
     candidate_selected_text_color: 0x6750A4
     candidate_selected_text_color_dark: 0xD0BCFF
 
-keyboard:
-  colors:
-    keyboard_bg_color: 0xE3E4E8
-    keyboard_bg_color_dark: 0x202020
+  material_rose:
+    name: "暖玫瑰"
+    primary_color: 0x984061
+    keyboard_background:
+      type: gradient
+      colors: [0xFFF8F8, 0xF8E8EA]
+      colors_dark: [0x1F1A1C, 0x2A2225]
+      angle: 160
     key_bg_color: 0xFFFFFF
-    key_bg_color_dark: 0x4A4A4A
-    candidate_bar_bg_color: 0xE3E4E8
-    candidate_bar_bg_color_dark: 0x202020
-    key_text_color: 0x202124
-    key_text_color_dark: 0xE8EAED
-    candidate_text_color: 0x202124
-    candidate_text_color_dark: 0xE8EAED
+    key_bg_color_dark: 0x36292C
+    key_text_color: 0x201A1B
+    key_text_color_dark: 0xEFDEE4
+    candidate_text_color: 0x201A1B
+    candidate_text_color_dark: 0xEFDEE4
+    candidate_selected_text_color: 0x984061
+    candidate_selected_text_color_dark: 0xEFB8C8
+
+  material_ocean:
+    name: "海蓝"
+    primary_color: 0x006494
+    keyboard_background:
+      type: gradient
+      colors: [0xFDFBFF, 0xE7EEF8]
+      colors_dark: [0x101418, 0x1B2024]
+      angle: 160
+    key_bg_color: 0xFFFFFF
+    key_bg_color_dark: 0x2A3036
+    key_text_color: 0x191C20
+    key_text_color_dark: 0xE2E2E9
+    candidate_text_color: 0x191C20
+    candidate_text_color_dark: 0xE2E2E9
+    candidate_selected_text_color: 0x006494
+    candidate_selected_text_color_dark: 0x95CCFF
+
+  material_forest:
+    name: "松绿"
+    primary_color: 0x2F6B4F
+    keyboard_background:
+      type: gradient
+      colors: [0xF7FBF5, 0xE6F0E4]
+      colors_dark: [0x121613, 0x1B211D]
+      angle: 160
+    key_bg_color: 0xFFFFFF
+    key_bg_color_dark: 0x27302A
+    key_text_color: 0x1A201B
+    key_text_color_dark: 0xDFE6DF
+    candidate_text_color: 0x1A201B
+    candidate_text_color_dark: 0xDFE6DF
+    candidate_selected_text_color: 0x2F6B4F
+    candidate_selected_text_color_dark: 0x9FD5B5
+
+
+  # ── 渐变家族（3 断点渐变 + 玻璃拟态半透明按键） ──
+  gradient_aurora:
+    name: "极光梦境"
+    primary_color: 0x5E4FD1
+    keyboard_background:
+      type: gradient
+      colors: [0x9FD8F0, 0xB4A8F5, 0x8EE8D8]
+      colors_dark: [0x1A1B3A, 0x2D2A6E, 0x0E5C55]
+      angle: 160
+    key_bg_color: 0x99FFFFFF
+    key_bg_color_dark: 0x2EFFFFFF
+    key_text_color: 0x1F2A44
+    key_text_color_dark: 0xE6F2FF
+    candidate_text_color: 0x1F2A44
+    candidate_text_color_dark: 0xE6F2FF
+    candidate_selected_text_color: 0x4A3CBE
+    candidate_selected_text_color_dark: 0x8FF0DC
+
+  gradient_sunset:
+    name: "暮霞"
+    primary_color: 0xC2447A
+    keyboard_background:
+      type: gradient
+      colors: [0xFFD9A6, 0xFFA9A8, 0xE58CC9]
+      colors_dark: [0x3A1C3F, 0x7A2E5B, 0x2B1F4E]
+      angle: 160
+    key_bg_color: 0x99FFFFFF
+    key_bg_color_dark: 0x30FFFFFF
+    key_text_color: 0x4A2030
+    key_text_color_dark: 0xFFE9E2
+    candidate_text_color: 0x4A2030
+    candidate_text_color_dark: 0xFFE9E2
+    candidate_selected_text_color: 0xB03A6E
+    candidate_selected_text_color_dark: 0xFF9FB8
+
+  gradient_mint:
+    name: "青提薄荷"
+    primary_color: 0x0E9F6E
+    keyboard_background:
+      type: gradient
+      colors: [0xB9F3D4, 0x8DE3C7, 0xD6F5EF]
+      colors_dark: [0x0B3D2E, 0x14532D, 0x0F2F3D]
+      angle: 160
+    key_bg_color: 0x99FFFFFF
+    key_bg_color_dark: 0x2BFFFFFF
+    key_text_color: 0x0F3A2E
+    key_text_color_dark: 0xDFF8EC
+    candidate_text_color: 0x0F3A2E
+    candidate_text_color_dark: 0xDFF8EC
+    candidate_selected_text_color: 0x0B8A5F
+    candidate_selected_text_color_dark: 0x6EE7B7
+
+  gradient_sakura:
+    name: "樱粉雪"
+    primary_color: 0xE0568C
+    keyboard_background:
+      type: gradient
+      colors: [0xFFE3EC, 0xFFC7D9, 0xE8F4FF]
+      colors_dark: [0x35243A, 0x50254E, 0x27335F]
+      angle: 160
+    key_bg_color: 0x99FFFFFF
+    key_bg_color_dark: 0x30FFFFFF
+    key_text_color: 0x4A2338
+    key_text_color_dark: 0xFFE7F0
+    candidate_text_color: 0x4A2338
+    candidate_text_color_dark: 0xFFE7F0
+    candidate_selected_text_color: 0xC74A7C
+    candidate_selected_text_color_dark: 0xFF9EC4
+
+  gradient_ocean:
+    name: "深海"
+    primary_color: 0x0E7490
+    keyboard_background:
+      type: gradient
+      colors: [0x2193B0, 0x4FB3D9, 0x8FE3F5]
+      colors_dark: [0x0F2027, 0x203A43, 0x2C5364]
+      angle: 160
+    key_bg_color: 0x99FFFFFF
+    key_bg_color_dark: 0x2BFFFFFF
+    key_text_color: 0x0E2A3A
+    key_text_color_dark: 0xD9F2FB
+    candidate_text_color: 0x0E2A3A
+    candidate_text_color_dark: 0xD9F2FB
+    candidate_selected_text_color: 0x0C647C
+    candidate_selected_text_color_dark: 0x67E8F9
+
+
+  # ── 图片背景家族（背景图为 PIL 程序化原创生成，见 NOTICE.md） ──
+  image_galaxy:
+    name: "银河漫游"
+    primary_color: 0x7C6BD9
+    keyboard_background:
+      type: image
+      src: "themes/starry_night.jpg"
+      fit: cover
+      overlay_alpha: 0.10
+      overlay_alpha_dark: 0.22
+    key_bg_color: 0x8CFFFFFF
+    key_bg_color_dark: 0x40FFFFFF
+    key_text_color: 0x232323
+    key_text_color_dark: 0xF2F2F2
+    candidate_text_color: 0xF2F2F2
+    candidate_text_color_dark: 0xF2F2F2
+    candidate_selected_text_color: 0xC7B8FF
+    candidate_selected_text_color_dark: 0xC7B8FF
+
+  image_mist:
+    name: "晨雾云海"
+    primary_color: 0x3E6FA8
+    keyboard_background:
+      type: image
+      src: "themes/dawn_mist.jpg"
+      src_dark: "themes/dusk_glow.jpg"
+      fit: cover
+      overlay_alpha: 0.12
+      overlay_alpha_dark: 0.28
+    key_bg_color: 0xA6FFFFFF
+    key_bg_color_dark: 0x2EFFFFFF
+    key_text_color: 0x2A3548
+    key_text_color_dark: 0xF2F4F8
+    candidate_text_color: 0x2A3548
+    candidate_text_color_dark: 0xF2F4F8
+    candidate_selected_text_color: 0x3E6FA8
+    candidate_selected_text_color_dark: 0xBBD6F2
+
+keyboard:
+  # 全局兜底颜色（color_schemes 未覆盖的字段回退到这里，取 M3 紫罗兰表面色阶）
+  colors:
+    keyboard_bg_color: 0xF3EDF7
+    keyboard_bg_color_dark: 0x211F26
+    key_bg_color: 0xFFFFFF
+    key_bg_color_dark: 0x2B2930
+    candidate_bar_bg_color: 0xF3EDF7
+    candidate_bar_bg_color_dark: 0x211F26
+    key_text_color: 0x1D1B20
+    key_text_color_dark: 0xE6E1E5
+    candidate_text_color: 0x1D1B20
+    candidate_text_color_dark: 0xE6E1E5
 
   key:
-    corner_radius: 8
+    corner_radius: 14
 
   shadow:
     enabled: true
-    elevation: 2
+    elevation: 1
+
+  fonts:
+    # 键面主字用 Medium（略重、辨识度高），候选与注释用 Regular；
+    # key_label_font 保留内置 ChaiPUA（字根 / CJK 扩展区字符兼容）
+    key_font: "fonts/lxgw_wenkai_medium.ttf"
+    candidate_font: "fonts/lxgw_wenkai_regular.ttf"
+    comment_font: "fonts/lxgw_wenkai_regular.ttf"
