@@ -6,8 +6,8 @@
 
 | 分支 | 状态 | 说明 |
 |------|------|------|
-| `main` | 本地已提交（未推送） | `9623694` 规则/工具；`11e3623` **v1.0.2** 五套配色对比度修复 |
-| `xime_theme_pack` | 本地已提交 `070f990`（未推送、未发 Release） | **v1.2.0** 候选页白屏 + 暗色对比度修复 |
+| `main` | **已推送** `b42e44d`（2026-10-27，待发 Release） | `9623694` 规则/工具；`11e3623` **v1.0.2** 五套配色对比度修复 |
+| `xime_theme_pack` | **已推送** `070f990`（待发 Release） | **v1.2.0** 候选页白屏 + 暗色对比度修复 |
 
 ### 本轮完成
 
@@ -46,12 +46,10 @@
 
 ## 下一步
 
-1. **等用户确认两版配色改动**（暗色特殊键压暗、选中色变深是否符合预期）。
-2. 用户同意后依次发版（一次即可触发全部变更分支）：
-   1) push `xime_theme_pack` 与 `main`；
-   2) 发布任一 Release 触发 auto-archive；
-   3) 核对新 tag：`xime_theme_pack-1.2.0`（yaml + zip）与 `xime_flypy_proxy-1.0.2`（仅 yaml，
-      无 themes/fonts 故不打 zip）。
+1. ~~等用户确认两版配色改动~~ → 已确认（2026-10-27，含 push 授权）。
+2. ~~push `xime_theme_pack` 与 `main`~~ → **已完成**（远端 main `b42e44d`、xime_theme_pack `070f990`）。
+   剩余：**发布任一 Release 触发 auto-archive**（需用户操作或在网页/API 建 Release），然后核对：
+   `xime_theme_pack-1.2.0`（yaml + zip）与 `xime_flypy_proxy-1.0.2`（仅 yaml，无 themes/fonts 不打 zip）。
 3. 用 `tools/index_entry.py` 取实测 sha256/size，分别更新：
    - `xime-index/src/layouts/xime_theme_pack.yaml`（1.2.0）；
    - `xime-index/src/layouts/xime_flypy_proxy.yaml`（1.0.2）。
