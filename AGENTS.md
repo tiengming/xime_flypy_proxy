@@ -317,8 +317,8 @@ python tools/index_entry.py --tag xime_theme_pack-1.2.0 --asset xime_theme_pack.
 
 ## 9. 已知问题 / 待办
 
-- `main` 布局（小鹤双拼 5 套配色）仍有 7 处对比度不达标（apple/claude/notion 的选中色与
-  特殊键等），尚未修版。详见 `PROGRESS.md`。
+- `main` 布局的 7 处对比度已在 v1.0.2 修复（亮色选中色 + 暗色特殊键），`tools/check_colors.py`
+  对 5 套配色全部通过；截图沿用旧图（观感变化小）。
 - 银河漫游 / 星月童话的展开候选页左栏符号≈2.4:1，属客户端限制（无分栏配色字段）；
   若后续客户端支持展开页独立配色，去掉 `keyboard_bg_color` 兜底 workaround。
 - `themes/` 实际 10 张背景图（旧文档写 11 张，v1.2.0 已更正）。
