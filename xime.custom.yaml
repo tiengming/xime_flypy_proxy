@@ -1,13 +1,29 @@
 # ══════════════════════════════════════════════════════════
-#  xime 主题包（xime_theme_pack）v1.1.0
+#  xime 主题包（xime_theme_pack）v1.2.0
 #  15 套配色合并同一份配置（应用内随意切换，互不顶替）：
 #   · Material You 家族 ×4（M3 色调结构：紫罗兰/暖玫瑰/海蓝/松绿）
 #   · 渐变家族 ×5（3 断点渐变 + 玻璃拟态半透明按键）
 #   · 图片背景家族 ×6（银河/晨雾/远山/樱吹雪/星月/海平线，themes/ 原创）
 #  自带字体：Maple Mono NL CN（键面，SIL OFL 1.1）+ 霞鹜文楷（候选/注释，SIL OFL 1.1）
-#  v1.1.0：关闭按键阴影（半透明键面下投影轮廓残缺）；图片家族扩到 6 场景；
-#          键面字体换用 Maple Mono 圆角等宽（含 CJK、无连字变体）
-#  全部配色文字对比度已按 WCAG 校验（键面 ≥4.5:1，选中色 ≥3:1）
+#
+#  v1.2.0 修复（对照 Xime 3.x 取色逻辑逐项复核）：
+#   · 【候选展开页白屏】图片主题的展开候选页背景取 keyboard_bg_color 纯色兜底
+#     （图片背景无法映射到该页），未配置时回退白/近黑；银河漫游、星月童话的候选
+#     文字是近白色，亮色模式下变成「白底白字」整页不可读。为这两套补上取自背景图
+#     的深色 keyboard_bg_color（暗色由应用自动调暗，无需 _dark 字段）。
+#   · 【特殊键白字对比不足】特殊键暗色底色默认取 primary_color，应用按「底色亮度
+#     >0.5 用按键文字色，否则用 #E8EAED」选文字；月夜金/落日橙/樱粉等亮 primary
+#     被判为暗底 → 浅灰字压在亮色键面上（星月 1.87:1、海 2.51:1、樱 2.96:1、
+#     银河 3.51:1）。为这些主题补 special_key_bg_color_dark（同色相压暗，≥4.5:1）。
+#   · 【候选选中色偏浅】选中胶囊 = 20% 强调色叠在候选栏背景上，部分浅色主题的
+#     选中文字对比度仅 1.7~2.7:1。统一压暗到 ≥3:1（色相不变）。
+#   · 【深海亮色候选文字】主渐变首断点 #2193B0 上 #0E2A3A 仅 4.16:1（展开页为纯色
+#     首断点），候选文字压暗到 #0B2230（4.56:1）；暗色特殊键同步微调。
+#   · 【极光梦境暗色键面字】渐变底部青绿段上玻璃键面偏亮，键面字 #E6F2FF 仅 4.45:1，
+#     改为纯白 5.05:1。
+#  全部配色复核：键面文字 / 候选文字 ≥4.5:1、候选选中色 ≥3:1（亮暗两种模式）。
+#  注：银河漫游 / 星月童话的展开候选页「左栏符号」底色来自半透明键色（浅灰），
+#  文字跟随候选色（白），约 2.4:1 —— 配置层无独立字段可分栏取色，属应用侧限制。
 # ══════════════════════════════════════════════════════════
 
 style:
@@ -96,7 +112,8 @@ color_schemes:
     key_bg_color: 0x99FFFFFF
     key_bg_color_dark: 0x2EFFFFFF
     key_text_color: 0x1F2A44
-    key_text_color_dark: 0xE6F2FF
+    # v1.2.0：暗色渐变底部青绿段上的玻璃键面偏亮，原 #E6F2FF 仅 4.45:1 → 纯白 5.05:1
+    key_text_color_dark: 0xFFFFFF
     candidate_text_color: 0x1F2A44
     candidate_text_color_dark: 0xE6F2FF
     candidate_selected_text_color: 0x4A3CBE
@@ -116,8 +133,10 @@ color_schemes:
     key_text_color_dark: 0xFFE9E2
     candidate_text_color: 0x4A2030
     candidate_text_color_dark: 0xFFE9E2
-    candidate_selected_text_color: 0xB03A6E
+    # v1.2.0：选中色压暗到 3.05:1；暗色特殊键压暗到 4.60:1
+    candidate_selected_text_color: 0x882D55
     candidate_selected_text_color_dark: 0xFF9FB8
+    special_key_bg_color_dark: 0xB13E6F
 
   gradient_mint:
     name: "青提薄荷"
@@ -133,8 +152,10 @@ color_schemes:
     key_text_color_dark: 0xDFF8EC
     candidate_text_color: 0x0F3A2E
     candidate_text_color_dark: 0xDFF8EC
-    candidate_selected_text_color: 0x0B8A5F
+    # v1.2.0：选中色 3.08:1；暗色特殊键 4.62:1
+    candidate_selected_text_color: 0x0A7954
     candidate_selected_text_color_dark: 0x6EE7B7
+    special_key_bg_color_dark: 0x0A7752
 
   gradient_sakura:
     name: "樱粉雪"
@@ -150,8 +171,10 @@ color_schemes:
     key_text_color_dark: 0xFFE7F0
     candidate_text_color: 0x4A2338
     candidate_text_color_dark: 0xFFE7F0
-    candidate_selected_text_color: 0xC74A7C
+    # v1.2.0：选中色 3.06:1；暗色特殊键 4.65:1
+    candidate_selected_text_color: 0xB34370
     candidate_selected_text_color_dark: 0xFF9EC4
+    special_key_bg_color_dark: 0xAC426C
 
   gradient_ocean:
     name: "深海"
@@ -165,16 +188,22 @@ color_schemes:
     key_bg_color_dark: 0x2BFFFFFF
     key_text_color: 0x0E2A3A
     key_text_color_dark: 0xD9F2FB
-    candidate_text_color: 0x0E2A3A
+    # v1.2.0：展开候选页取首断点 #2193B0 纯色，原文字 4.16:1 → #0B2230（4.56:1）
+    candidate_text_color: 0x0B2230
     candidate_text_color_dark: 0xD9F2FB
-    candidate_selected_text_color: 0x0C647C
+    # v1.2.0：选中色 3.06:1；暗色特殊键 4.57:1
+    candidate_selected_text_color: 0x073D4C
     candidate_selected_text_color_dark: 0x67E8F9
+    special_key_bg_color_dark: 0x0E728D
 
 
   # ── 图片背景家族（背景图为 PIL 程序化原创生成，见 NOTICE.md） ──
   image_galaxy:
     name: "银河漫游"
     primary_color: 0x7C6BD9
+    # v1.2.0：展开候选页用 keyboard_bg_color 纯色兜底（图片不参与该页渲染），
+    # 候选文字为近白色，不配深色底会白底白字；取背景图深空色，暗色由应用自动调暗。
+    keyboard_bg_color: 0x1E1E3E
     keyboard_background:
       type: image
       src: "themes/starry_night.jpg"
@@ -189,6 +218,8 @@ color_schemes:
     candidate_text_color_dark: 0xF2F2F2
     candidate_selected_text_color: 0xC7B8FF
     candidate_selected_text_color_dark: 0xC7B8FF
+    # v1.2.0：暗色特殊键原取 primary（#7C6BD9，3.51:1）→ 压暗 4.60:1
+    special_key_bg_color_dark: 0x695BB8
 
   image_mist:
     name: "晨雾云海"
@@ -206,8 +237,10 @@ color_schemes:
     key_text_color_dark: 0xF2F4F8
     candidate_text_color: 0x2A3548
     candidate_text_color_dark: 0xF2F4F8
-    candidate_selected_text_color: 0x3E6FA8
+    # v1.2.0：选中色 3.05:1；暗色特殊键 4.57:1
+    candidate_selected_text_color: 0x376396
     candidate_selected_text_color_dark: 0xBBD6F2
+    special_key_bg_color_dark: 0x3C6BA1
 
   image_mountains:
     name: "远山拾光"
@@ -225,8 +258,10 @@ color_schemes:
     key_text_color_dark: 0xF0F4F2
     candidate_text_color: 0x1F3340
     candidate_text_color_dark: 0xF0F4F2
-    candidate_selected_text_color: 0x2F6B4F
+    # v1.2.0：选中色 3.06:1；暗色特殊键 4.55:1
+    candidate_selected_text_color: 0x2B6148
     candidate_selected_text_color_dark: 0x9FD5B5
+    special_key_bg_color_dark: 0x3B7459
 
   image_sakura:
     name: "樱吹雪"
@@ -244,12 +279,16 @@ color_schemes:
     key_text_color_dark: 0xF7E9F0
     candidate_text_color: 0x4A2338
     candidate_text_color_dark: 0xF7E9F0
-    candidate_selected_text_color: 0xC74A7C
+    # v1.2.0：选中色 3.07:1；暗色特殊键 4.65:1
+    candidate_selected_text_color: 0xAC406B
     candidate_selected_text_color_dark: 0xFF9EC4
+    special_key_bg_color_dark: 0xAC426C
 
   image_moonlit:
     name: "星月童话"
     primary_color: 0xD9A441
+    # v1.2.0：理由同银河漫游（展开候选页白底白字），取夜空深蓝作纯色兜底。
+    keyboard_bg_color: 0x161D34
     keyboard_background:
       type: image
       src: "themes/moonlit.jpg"
@@ -264,6 +303,8 @@ color_schemes:
     candidate_text_color_dark: 0xF5F1E8
     candidate_selected_text_color: 0xFFD98E
     candidate_selected_text_color_dark: 0xFFD98E
+    # v1.2.0：暗色特殊键原取 primary（#D9A441，1.87:1）→ 同色相压暗 4.68:1
+    special_key_bg_color_dark: 0x826227
 
   image_sea:
     name: "落日海平线"
@@ -281,8 +322,10 @@ color_schemes:
     key_text_color_dark: 0xF2F2F2
     candidate_text_color: 0x3A2A24
     candidate_text_color_dark: 0xF2F2F2
-    candidate_selected_text_color: 0x9C4A1E
+    # v1.2.0：选中色 3.07:1；暗色特殊键 4.57:1
+    candidate_selected_text_color: 0x823E19
     candidate_selected_text_color_dark: 0xFFB37C
+    special_key_bg_color_dark: 0x9F552D
 
 keyboard:
   # 全局兜底颜色（color_schemes 未覆盖的字段回退到这里，取 M3 紫罗兰表面色阶）
@@ -301,7 +344,7 @@ keyboard:
   key:
     corner_radius: 14
 
-  # v1.1.0 关闭按键阴影：半透明玻璃键面下，应用按默认圆角绘制的投影
+  # 关闭按键阴影：半透明玻璃键面下，应用按默认圆角绘制的投影
   # 与 14dp 键面圆角不匹配，四角/边缘投影残缺、视觉怪异；玻璃质感不依赖投影。
   # 若想恢复：enabled: true（建议配合 8dp 圆角使用）。
   shadow:
