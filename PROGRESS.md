@@ -6,8 +6,9 @@
 
 | 分支 | 状态 | 说明 |
 |------|------|------|
-| `main` | **已推送** `b42e44d`（2026-10-27，待发 Release） | `9623694` 规则/工具；`11e3623` **v1.0.2** 五套配色对比度修复 |
-| `xime_theme_pack` | **已推送** `070f990`（待发 Release） | **v1.2.0** 候选页白屏 + 暗色对比度修复 |
+| `main` | 已推送，**已发 Release `xime_flypy_proxy-1.0.2`** | 规则/工具 + **v1.0.2** 五套配色对比度修复 |
+| `xime_theme_pack` | 已推送，**已发 Release `xime_theme_pack-1.2.0`** | **v1.2.0** 候选页白屏 + 暗色对比度修复 |
+| `xime-index` | **PR #16 已提交**（`fix/layouts-v120-v102`） | <https://github.com/ximeiorg/xime-index/pull/16>（xime_flypy_proxy 1.0.2 + xime_theme_pack 1.2.0） |
 
 ### 本轮完成
 
@@ -46,14 +47,12 @@
 
 ## 下一步
 
-1. ~~等用户确认两版配色改动~~ → 已确认（2026-10-27，含 push 授权）。
-2. ~~push `xime_theme_pack` 与 `main`~~ → **已完成**（远端 main `b42e44d`、xime_theme_pack `070f990`）。
-   剩余：**发布任一 Release 触发 auto-archive**（需用户操作或在网页/API 建 Release），然后核对：
-   `xime_theme_pack-1.2.0`（yaml + zip）与 `xime_flypy_proxy-1.0.2`（仅 yaml，无 themes/fonts 不打 zip）。
-3. 用 `tools/index_entry.py` 取实测 sha256/size，分别更新：
-   - `xime-index/src/layouts/xime_theme_pack.yaml`（1.2.0）；
-   - `xime-index/src/layouts/xime_flypy_proxy.yaml`（1.0.2）。
-   截图 URL 保持旧 tag（用户确认沿用）；**PR 需用户明确同意**。
+1. ~~确认配色 / push / 发 Release / 取数 / 改索引~~ → **全部完成**：
+   - Release：`xime_theme_pack-1.2.0`（yaml + zip 20.2 MB）、`xime_flypy_proxy-1.0.2`（yaml 17.3 KB）；
+   - 索引条目已按实测 sha256/size 填满，分支 `fix/layouts-v120-v102` 已推 fork；
+   - **PR #16**：<https://github.com/ximeiorg/xime-index/pull/16>。
+2. **等维护者 review / merge**。若 CI 报错或要求改字段，修 fork 分支后推同一分支即可自动更新 PR。
+3. 合并后核对线上 `layouts/index.yaml` 是否出现 1.2.0 / 1.0.2，并抽查 `sha256` 一致。
 4. 截图重拍（可选）：两版都只动了选中色/暗色特殊键，`images/img1~5` 观感变化小；
    若后补可把索引截图 URL 换到新 tag。
 5. 可选：把 `tools/check_colors.py` 接进 GitHub Actions（PR 时对改动分支跑一遍）。
