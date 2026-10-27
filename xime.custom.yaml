@@ -4,7 +4,7 @@ metadata:
   platform: android
   config_version: 1
   generator: "Xime Config Generator"
-  modified_time: "2026-10-01"
+  modified_time: "2026-10-27"
 
 xime_index:
   base_urls:
@@ -24,6 +24,7 @@ style:
 #  3. Claude 暖砂
 #  4. Apple 原生
 #  5. Material You 动态
+#  v1.0.2：修复选中候选与暗色特殊键对比度（与主题包 v1.2.0 同一套取色规则）
 # ══════════════════════════════════════════════════════════
 color_schemes:
   # ── 1. 星野夜航 ──
@@ -41,6 +42,8 @@ color_schemes:
     key_text_color_dark: 0xE3DEF7
     candidate_text_color: 0x38305E
     candidate_text_color_dark: 0xE3DEF7
+    # v1.0.2：暗色特殊键原取 primary（#6D5BD0，4.29:1）→ 同色相压暗 4.59:1
+    special_key_bg_color_dark: 0x6957C8
 
   # ── 2. Notion 极简 ──
   # 设计参考：Notion 的暖白背景 + 深墨文字 + Notion 蓝强调色
@@ -58,6 +61,9 @@ color_schemes:
     key_text_color_dark: 0xE9E9E7
     candidate_text_color: 0x37352F
     candidate_text_color_dark: 0xE9E9E7
+    # v1.0.2：选中色 2.68→3.07:1；暗色特殊键 3.22→4.59:1
+    candidate_selected_text_color: 0x2079D2
+    special_key_bg_color_dark: 0x1C6AB7
 
   # ── 3. Claude 暖砂 ──
   # 设计参考：Claude 官网的奶油底色 + 赤陶色强调 + 暖灰文字
@@ -75,6 +81,9 @@ color_schemes:
     key_text_color_dark: 0xF5F4EF
     candidate_text_color: 0x3D3D3A
     candidate_text_color_dark: 0xF5F4EF
+    # v1.0.2：选中色 2.13→3.05:1；暗色特殊键 2.59→4.57:1
+    candidate_selected_text_color: 0xB26147
+    special_key_bg_color_dark: 0x9C563F
 
   # ── 4. Apple 原生 ──
   # 设计参考：iOS 系统键盘的浅灰底 + 纯白按键 + 系统蓝强调
@@ -92,6 +101,9 @@ color_schemes:
     key_text_color_dark: 0xFFFFFF
     candidate_text_color: 0x000000
     candidate_text_color_dark: 0xFFFFFF
+    # v1.0.2：选中色 2.01→3.09:1；暗色特殊键 3.33→4.57:1
+    candidate_selected_text_color: 0x005EC5
+    special_key_bg_color_dark: 0x0065D4
 
   # ── 5. Material You 动态 ──
   # 设计参考：Material Design 3 基准调色板（紫罗兰），自动适配系统亮/暗模式
